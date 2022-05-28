@@ -4,14 +4,13 @@ echo "\
 email = \"colemcintosh6@gmail.com\"\n\
 " > ~/.streamlit/credentials.toml
 echo "[theme]
-
-primaryColor='#000'
-backgroundColor='#D8D8F6'
-secondaryBackgroundColor='#B18FCF'
-textColor='#000'
-font='sans serif'"
-[server]\n\
-headless = true\n\
-enableCORS=false\n\
-port = $PORT\n\
+primaryColor = ‘#84a3a7’
+backgroundColor = ‘#EFEDE8’
+secondaryBackgroundColor = ‘#fafafa’
+textColor= ‘#424242’
+font = ‘sans serif’
+[server]
+headless = true
+port = $PORT
+enableCORS = false
 " > ~/.streamlit/config.toml
