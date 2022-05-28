@@ -4,23 +4,21 @@ import random
 # Define the number of penalties to be taken by each team.
 NUM_PENALTIES = 5
 
-def penalty_simulation(env, team, probability_of_penalty):
+def penalty_simulation(env, team):
     """Simulate a penalty shootout between Real Madrid and Liverpool FC."""
 
-    # Define the probability of scoring a penalty for each team.
-    #if team == 'Real Madrid':
-    #    p = 0.75  # Real Madrid have a 75% chance of scoring a penalty.
-    #else:
-    #    p = 0.818  # Liverpool FC have an 81.8% chance of scoring a penalty.
-
-    # Define the number of penalties scored by each team.
     num_penalties_scored = 0
 
     # Simulate the penalty shootout.
     for i in range(NUM_PENALTIES):
+        #print('+' * 25)  # Print the number of penalties taken by the team in this simulation to the console window.
+        
+        penalty_probability = random.random()
+
+        save_probability = random.random()
 
         # Generate a random number between 0 and 1. If it is less than p, then the penalty is scored. Otherwise, it is missed.
-        if random.random() < probability_of_penalty:
+        if save_probability < penalty_probability:
 
             # Increment the number of penalties scored by this team by 1.
             num_penalties_scored += 1
@@ -30,6 +28,10 @@ def penalty_simulation(env, team, probability_of_penalty):
         #else:
 
             #print('%s misses!' % team)
+        
+
+        #print(f"penalty probability: {penalty_probability}")
+        #print(f"save probability: {save_probability}")
 
         yield env.timeout(1)  # Wait for 1 time unit before taking the next penalty.
 
@@ -39,14 +41,13 @@ def penalty_simulation(env, team, probability_of_penalty):
     return num_penalties_scored  # Return the number of penalties scored by this team in this simulation.
 
 
-def main(number_of_simulations, liverpool_probability_of_penalty, real_madrid_probability_of_penalty):
+def main(number_of_simulations):
 
     # Create an environment to simulate the penalty shootout in.
     env = simpy.Environment()
 
     liverpool_wins = 0
     real_madrid_wins = 0
-    draws = 0
 
     # Create a list to store the number of penalties scored by Real Madrid in each simulation in.
     real_madrid_penalties = []
@@ -58,9 +59,9 @@ def main(number_of_simulations, liverpool_probability_of_penalty, real_madrid_pr
 
         #print('\nSimulation %d' % (i + 1))  # Print which simulation is being run at this time step to the console window.
 
-        real_madrid = env.process(penalty_simulation(env, 'Real Madrid', real_madrid_probability_of_penalty))  # Simulate Real Madrid taking their penalties first in this simulation using simpy's process function and store it in real_madrid variable for later use (to get its return value).
+        real_madrid = env.process(penalty_simulation(env, 'Real Madrid'))  # Simulate Real Madrid taking their penalties first in this simulation using simpy's process function and store it in real_madrid variable for later use (to get its return value).
 
-        liverpool_fc = env.process(penalty_simulation(env, 'Liverpool FC', liverpool_probability_of_penalty))  # Simulate Liverpool FC taking their penalties second in this simulation using simpy's process function and store it in liverpool_fc variable for later use (to get its return value).
+        liverpool_fc = env.process(penalty_simulation(env, 'Liverpool FC'))  # Simulate Liverpool FC taking their penalties second in this simulation using simpy's process function and store it in liverpool_fc variable for later use (to get its return value).
 
         env.run()  # Run the simulation.
 
@@ -77,16 +78,22 @@ def main(number_of_simulations, liverpool_probability_of_penalty, real_madrid_pr
         elif real_madrid.value < liverpool_fc.value:
             liverpool_wins += 1
         else:
-            draws += 1
+            while real_madrid.value == liverpool_fc.value:
+                real_madrid = env.process(penalty_simulation(env, 'Real Madrid'))
+                liverpool_fc = env.process(penalty_simulation(env, 'Liverpool FC'))
+                env.run()
+                if real_madrid.value > liverpool_fc.value:
+                    real_madrid_wins += 1
+                    break
+                elif real_madrid.value < liverpool_fc.value:
+                    liverpool_wins += 1
+                    break
 
     # Calculate the probability of Real Madrid winning the penalty shootout against Liverpool FC in each simulation.
     real_madrid_win_probability = (real_madrid_wins / number_of_simulations) * 100
 
     # Calculate the probability of Liverpool FC winning the penalty shootout against Real Madrid in each simulation.
     liverpool_fc_win_probability = (liverpool_wins / number_of_simulations) * 100
-
-    # Calculate the probability of a draw between Real Madrid and Liverpool FC in each simulation.
-    draw_probability = (draws / number_of_simulations) * 100
 
 
     #print('\nProbability of Liverpool winning: %.2f%%' % liverpool_fc_win_probability)
@@ -98,7 +105,7 @@ def main(number_of_simulations, liverpool_probability_of_penalty, real_madrid_pr
     #print('\nProbability of a draw: %.2f%%' % draw_probability)  # Print the probability of a draw between Real Madrid and Liverpool FC over all simulations to the console window.
     #print('Shootouts that would go into extra rounds: %d' % draws)
 
-    return [[liverpool_wins,liverpool_fc_win_probability],  [real_madrid_wins, real_madrid_win_probability], [draws, draw_probability]]
+    return [[liverpool_wins,liverpool_fc_win_probability],  [real_madrid_wins, real_madrid_win_probability]]
 
 
 if __name__ == '__main__':

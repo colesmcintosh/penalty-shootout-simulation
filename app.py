@@ -39,18 +39,6 @@ with rm_win_prob:
 
     real_madrid_win_probs = st.empty()
 
-draw_counts, draw_prob = st.columns(2)
-
-with draw_counts:
-    st.markdown(f"<p style='margin: 1rem; text-align: center; border: 1px solid gray; border-radius: 5px;'>Draws</p>", unsafe_allow_html=True)
-
-    draws = st.empty()
-
-with draw_prob:
-    st.markdown(f"<p style='margin: 1rem; text-align: center; border: 1px solid gray; border-radius: 5px;'>Draw Probability</p>", unsafe_allow_html=True)
-
-    draw_probs = st.empty()
-
 chart = st.empty()
 
 with st.sidebar:
@@ -58,13 +46,6 @@ with st.sidebar:
     with st.form('Enter the number of simulations to run'):
         number_of_simulations = st.number_input("Number of simulations", min_value=1, max_value=1000000, value=1000)
 
-        liverpool_pen_probability = st.number_input("Liverpool's penalty estimated penalty success rate (%)", min_value=0.0, max_value=100.0, value=81.8)
-        
-        liverpool_pen_probability = liverpool_pen_probability / 100
-
-        real_madrid_pen_probability = st.number_input("Real Madrid's estimated penalty success rate (%)", min_value=0.0, max_value=100.0, value=75.0)
-        
-        real_madrid_pen_probability = real_madrid_pen_probability / 100
 
         button = st.form_submit_button("Run Simulation")
         # If hover over any button it will darken the button
@@ -72,11 +53,10 @@ with st.sidebar:
 
 
         if button: 
-            results = main(number_of_simulations, liverpool_pen_probability, real_madrid_pen_probability)
+            results = main(number_of_simulations)
 
             liverpool_stats = results[0]
             real_madrid_stats = results[1]
-            draws_stats = results[2]
 
             liverpool_win_count = liverpool_stats[0]
             liverpool_win_probability = liverpool_stats[1]
@@ -84,8 +64,6 @@ with st.sidebar:
             real_madrid_win_count = real_madrid_stats[0]
             real_madrid_win_probability = real_madrid_stats[1]
 
-            draw_count = draws_stats[0]
-            draw_probability = draws_stats[1]
 
             liverpool_wins.markdown(f"""<p style='font-size: 5rem; border-radius:5px; text-align: center; padding: 0.5rem;'>{liverpool_win_count.__format__(',.0f')}</p>""", unsafe_allow_html=True)
 
@@ -95,11 +73,9 @@ with st.sidebar:
 
             real_madrid_win_probs.markdown(f"<p style='font-size: 5rem; border-radius:5px; text-align: center; padding: 0.5rem;'>{str(real_madrid_win_probability.__format__('.2f'))}%</p>", unsafe_allow_html=True)
 
-            draws.markdown(f"""<p style='font-size: 5rem; border-radius:5px; text-align: center; padding: 0.5rem;' margin:1rem;'>{draw_count.__format__(',.0f')}</p>""", unsafe_allow_html=True)
+            
 
-            draw_probs.markdown(f"<p style='font-size: 5rem; border-radius:5px; text-align: center; padding: 0.5rem;' margin:1rem;'>{str(draw_probability.__format__('.2f'))}%</p>", unsafe_allow_html=True)
-
-            fig = go.Figure(data=[go.Bar(x=['Liverpool Wins', 'Real Madrid Wins', 'Draws'], y=[liverpool_win_count, real_madrid_win_count, draw_count], name='Wins')])
+            fig = go.Figure(data=[go.Bar(x=['Liverpool Wins', 'Real Madrid Wins'], y=[liverpool_win_count, real_madrid_win_count], name='Wins')])
             fig.update_layout(title_text='Wins', xaxis_title='Results', yaxis_title='Count')
             
             # Change the color of each bar
