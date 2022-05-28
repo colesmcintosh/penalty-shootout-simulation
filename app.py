@@ -68,7 +68,7 @@ with st.sidebar:
 
         button = st.form_submit_button("Run Simulation")
         # If hover over any button it will darken the button
-        st.markdown('<style>button:hover {background: #D8D8F6;box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);transition: all 0.25s ease-in-out}</style>', unsafe_allow_html=True)
+        st.markdown('<style>button:hover {box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);transition: all 0.25s ease-in-out}</style>', unsafe_allow_html=True)
 
 
         if button: 
@@ -103,7 +103,7 @@ with st.sidebar:
             fig.update_layout(title_text='Wins', xaxis_title='Results', yaxis_title='Count')
             
             # Change the color of each bar
-            fig.update_traces(marker_color=['#0B090B', '#978897', '#E3DDE3'])
+            fig.update_traces(marker_color=['#F0544F', '#C6D8D3', '#D81E5B'])
 
             fig.update_layout(title_text="Simulation Results", title_x=0.5)
 
